@@ -1,0 +1,24 @@
+<idea-plugin>
+    <id>com.bluekachina.fmscriptui</id>
+    <name>FileMaker Script UI</name>
+    <vendor url="https://github.com/Blue-Kachina">Blue-Kachina</vendor>
+
+    <description><![CDATA[
+        <p>Renders <code>```filemaker-script</code> fenced Markdown code blocks as collapsible,
+        FileMaker-Pro-style script accordions in the built-in Markdown preview, using
+        <a href="https://github.com/Blue-Kachina/fmscriptui">fmscriptui</a>.</p>
+
+        <h2>Usage</h2>
+        <p>Write a <code>```filemaker-script</code> fenced code block in any Markdown file
+        (see fmscriptui's <a href="https://github.com/Blue-Kachina/fmscriptui/blob/main/FENCE_FORMAT.md">
+        fence format spec</a>) and open the Markdown preview.</p>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.intellij.plugins.markdown</depends>
+
+    <extensions defaultExtensionNs="org.intellij.markdown">
+        <browserPreviewExtensionProvider
+            implementation="com.bluekachina.fmscriptui.markdown.FmScriptUiBrowserExtension$Provider"/>
+    </extensions>
+</idea-plugin>

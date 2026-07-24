@@ -1,0 +1,198 @@
+/* FM Script Renderer */
+.fm-script {
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin: 1rem 0;
+}
+
+.fm-script-title + .fm-script {
+    margin-top: 0;
+    border-top: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+@media print {
+    .fm-script-title + .fm-script {
+        border-top: 1px solid #d1d5db;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+    }
+}
+
+.fm-step {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.fm-step:last-child {
+    border-bottom: none;
+}
+
+.fm-step-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    background: #fff;
+    user-select: none;
+    list-style: none;
+}
+
+details.fm-step[open] > summary.fm-step-header {
+    border-bottom: none;
+}
+
+details.fm-step > summary.fm-step-header {
+    cursor: pointer;
+}
+
+details.fm-step > summary.fm-step-header:hover {
+    background: #f9fafb;
+}
+
+.fm-step-header::-webkit-details-marker { display: none; }
+
+.fm-step-num {
+    color: #9ca3af;
+    min-width: 2.25rem;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.fm-step-disabled-marker {
+    flex-shrink: 0;
+    color: #9ca3af;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.fm-step-name {
+    color: #1f2937;
+    font-weight: 700;
+}
+
+.fm-step--comment .fm-step-name {
+    color: #6b7280;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.fm-step-name--highlighted {
+    color: #b52aaa;
+}
+
+.fm-step-summary {
+    color: #6b7280;
+    margin-left: 0.15rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media print {
+    .fm-step-header {
+        align-items: flex-start;
+    }
+    .fm-step-summary {
+        white-space: normal;
+        overflow: visible;
+        color: #374151;
+    }
+}
+
+.fm-step-body {
+    padding: 0.25rem 0.75rem 0.5rem 3.5rem;
+    background: #fff;
+}
+
+.fm-options {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.7rem;
+}
+
+.fm-options tr {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.fm-options tr:last-child {
+    border-bottom: none;
+}
+
+.fm-key {
+    padding: 0.3rem 0.75rem 0.3rem 0;
+    color: #6b7280;
+    white-space: nowrap;
+    vertical-align: top;
+    width: 16%;
+}
+
+.fm-val {
+    padding: 0.3rem 0;
+    color: #374151;
+    vertical-align: top;
+}
+
+.fm-val-text {
+    font-family: inherit;
+}
+
+.fm-calc-block {
+    position: relative;
+    margin-top: 0.25rem;
+}
+
+.fm-calc-block pre {
+    margin: 0 !important;
+    border-radius: 0.375rem !important;
+    font-size: 0.7rem !important;
+    padding: 0.6rem 2.5rem 0.6rem 0.75rem !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+}
+
+.fm-copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem;
+    background: rgba(0, 0, 0, 0.05);
+    color: #6b7280;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    line-height: 0;
+    z-index: 1;
+    transition: background 0.15s, color 0.15s;
+}
+
+.fm-copy-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #374151;
+}
+
+/* FileMaker calculation blocks — light mode syntax theme */
+code.language-filemaker.hljs {
+    background: #ffffff;
+    color: #1f2937;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-x: visible;
+}
+
+pre:has(> code.language-filemaker) {
+    background: #ffffff;
+}
+
+code.language-filemaker .hljs-keyword       { color: #6d28d9; }
+code.language-filemaker .hljs-title.function_ { color: #7c3aed; }
+code.language-filemaker .hljs-built_in      { color: #2563eb; }
+code.language-filemaker .hljs-variable      { color: #9333ea; }
+code.language-filemaker .hljs-number        { color: #1d4ed8; }
+code.language-filemaker .hljs-string        { color: #0369a1; }
+code.language-filemaker .hljs-operator      { color: #374151; }
+code.language-filemaker .hljs-comment       { color: #6b7280; font-style: italic; }
