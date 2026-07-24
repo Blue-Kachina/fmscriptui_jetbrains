@@ -1,0 +1,90 @@
+/* Dark-theme overrides for fmscriptui accordions.
+   filemaker-init.js toggles the `fm-dark` class on <html> based on IDE theme detection;
+   this file only ever applies underneath that class, so it's a no-op in light themes.
+   Kept separate from the vendored filemaker-script.css so that file can be re-synced
+   from upstream (./gradlew updateFmscriptui) without clobbering these overrides. */
+
+html.fm-dark .fm-script {
+    border-color: #393b40;
+}
+
+html.fm-dark .fm-step {
+    border-bottom-color: #393b40;
+}
+
+html.fm-dark .fm-step-header {
+    background: #2b2d30;
+}
+
+html.fm-dark details.fm-step > summary.fm-step-header:hover {
+    background: #34363a;
+}
+
+html.fm-dark .fm-step-num {
+    color: #8c8f93;
+}
+
+html.fm-dark .fm-step-disabled-marker {
+    color: #8c8f93;
+}
+
+html.fm-dark .fm-step-name {
+    color: #dfe1e5;
+}
+
+html.fm-dark .fm-step--comment .fm-step-name {
+    color: #9da0a8;
+}
+
+html.fm-dark .fm-step-name--highlighted {
+    color: #d46bd0;
+}
+
+html.fm-dark .fm-step-summary {
+    color: #9da0a8;
+}
+
+html.fm-dark .fm-step-body {
+    background: #2b2d30;
+}
+
+html.fm-dark .fm-options tr {
+    border-bottom-color: #393b40;
+}
+
+html.fm-dark .fm-key {
+    color: #9da0a8;
+}
+
+html.fm-dark .fm-val {
+    color: #dfe1e5;
+}
+
+html.fm-dark .fm-copy-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: #9da0a8;
+}
+
+html.fm-dark .fm-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #dfe1e5;
+}
+
+/* FileMaker calculation blocks — dark-mode syntax theme, mirrors filemaker-script.css's light rules */
+html.fm-dark code.language-filemaker.hljs {
+    background: #1e1f22;
+    color: #dfe1e5;
+}
+
+html.fm-dark pre:has(> code.language-filemaker) {
+    background: #1e1f22;
+}
+
+html.fm-dark code.language-filemaker .hljs-keyword         { color: #cc7832; }
+html.fm-dark code.language-filemaker .hljs-title.function_ { color: #ffc66d; }
+html.fm-dark code.language-filemaker .hljs-built_in        { color: #6897bb; }
+html.fm-dark code.language-filemaker .hljs-variable        { color: #9876aa; }
+html.fm-dark code.language-filemaker .hljs-number          { color: #6897bb; }
+html.fm-dark code.language-filemaker .hljs-string           { color: #6a8759; }
+html.fm-dark code.language-filemaker .hljs-operator         { color: #a9b7c6; }
+html.fm-dark code.language-filemaker .hljs-comment          { color: #808080; font-style: italic; }

@@ -11,18 +11,26 @@ private val LOG = Logger.getInstance("FmScriptUi")
 
 private const val RES_INIT_JS = "filemaker-init.js"
 private const val RES_RENDER_JS = "render.js"
+private const val RES_HLJS_LANGUAGE_JS = "hljs-language.js"
+private const val RES_HLJS_JS = "hljs.min.js"
 private const val RES_CSS = "filemaker-script.css"
+private const val RES_DARK_CSS = "filemaker-script-dark.css"
 
-private val RESOURCE_NAMES = setOf(RES_INIT_JS, RES_RENDER_JS, RES_CSS)
+private val RESOURCE_NAMES = setOf(
+    RES_INIT_JS, RES_RENDER_JS, RES_HLJS_LANGUAGE_JS, RES_HLJS_JS, RES_CSS, RES_DARK_CSS,
+)
 
 private val resourceCache = mutableMapOf<String, ResourceProvider.Resource>()
 private val failedResources = mutableSetOf<String>()
 
 /**
- * Renders ```filemaker-script fenced code blocks in the Markdown preview as
- * fmscriptui accordions. render.js/filemaker-script.css are bundled verbatim
- * from https://github.com/Blue-Kachina/fmscriptui; filemaker-init.js is the
- * only plugin-authored script, wiring render.js into the preview's lifecycle.
+ * Renders ```filemaker-script fenced code blocks in the Markdown preview as fmscriptui
+ * accordions, with dark-theme styling and calculation syntax highlighting.
+ *
+ * render.js, hljs-language.js and filemaker-script.css are bundled verbatim from
+ * https://github.com/Blue-Kachina/fmscriptui; hljs.min.js is a pinned highlight.js UMD
+ * build from cdnjs. filemaker-init.js and filemaker-script-dark.css are the only
+ * plugin-authored files, wiring the rest into the preview's lifecycle and theme.
  */
 internal class FmScriptUiBrowserExtension : MarkdownBrowserPreviewExtension, ResourceProvider {
 
@@ -41,29 +49,38 @@ internal class FmScriptUiBrowserExtension : MarkdownBrowserPreviewExtension, Res
         }
     }
 
-    // render.js is only ever loaded via filemaker-init.js's dynamic import() (see filemaker-init.js
-    // for why), but the preview's CSP script-src allowlist is built purely from extensions' declared
-    // `scripts` URLs — a URL that's only reachable via dynamic import is never whitelisted and gets
-    // CSP-blocked. Declaring it here gets its exact URL into the allowlist so the dynamic import
-    // resolves to an allowed URL. It also makes render.js load once as a plain classic <script>,
-    // which throws a harmless "Unexpected token 'export'" (it's an ES module) — that's expected and
-    // does not affect the real load via dynamic import.
+    // render.js and hljs-language.js are only ever loaded via filemaker-init.js's dynamic
+    // import() (see filemaker-init.js for why), but the preview's CSP script-src allowlist is
+    // built purely from extensions' declared `scripts` URLs — a URL that's only reachable via
+    // dynamic import is never whitelisted and gets CSP-blocked. Declaring them here gets their
+    // exact URLs into the allowlist so the dynamic imports resolve to allowed URLs. It also
+    // makes each load once as a plain classic <script>, which throws a harmless "Unexpected
+    // token 'export'"/"'default'" (they're ES modules) — that's expected and does not affect
+    // the real load via dynamic import.
+    //
+    // hljs.min.js is a real UMD bundle (not an ES module) and is listed before filemaker-init.js
+    // so `window.hljs` exists by the time it's needed for language registration.
     override val scripts: List<String>
         get() = try {
             listOf(
+                PreviewStaticServer.getStaticUrl(this, RES_HLJS_JS),
                 PreviewStaticServer.getStaticUrl(this, RES_INIT_JS),
                 PreviewStaticServer.getStaticUrl(this, RES_RENDER_JS),
+                PreviewStaticServer.getStaticUrl(this, RES_HLJS_LANGUAGE_JS),
             )
         } catch (e: Exception) {
-            LOG.error("Failed to generate script URL for fmscriptui preview extension", e)
+            LOG.error("Failed to generate script URLs for fmscriptui preview extension", e)
             emptyList()
         }
 
     override val styles: List<String>
         get() = try {
-            listOf(PreviewStaticServer.getStaticUrl(this, RES_CSS))
+            listOf(
+                PreviewStaticServer.getStaticUrl(this, RES_CSS),
+                PreviewStaticServer.getStaticUrl(this, RES_DARK_CSS),
+            )
         } catch (e: Exception) {
-            LOG.error("Failed to generate style URL for fmscriptui preview extension", e)
+            LOG.error("Failed to generate style URLs for fmscriptui preview extension", e)
             emptyList()
         }
 
