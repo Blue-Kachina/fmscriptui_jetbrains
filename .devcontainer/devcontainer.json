@@ -1,0 +1,19 @@
+{
+	"name": "fmscriptui-markdown Gradle Build",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "."
+	},
+	"workspaceFolder": "/workspace",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+	// Named volume, not a bind mount from the host: Gradle's cache format/paths aren't
+	// portable across a Windows host and this Linux container, so give the container
+	// its own persistent GRADLE_USER_HOME instead of sharing the host's ~/.gradle.
+	// Also means downloaded distributions survive switching Gradle versions to test
+	// against (see Dockerfile) - only the first download of a given version is slow.
+	"mounts": [
+		"source=fmscriptui-markdown-gradle-cache,target=/home/gradle/.gradle,type=volume"
+	],
+	"remoteUser": "gradle",
+	"postCreateCommand": "./gradlew --version"
+}
