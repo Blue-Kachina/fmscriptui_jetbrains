@@ -5,6 +5,8 @@ An IntelliJ Platform plugin that extends the built-in Markdown preview (the bund
 so that ` ```filemaker-script ` fenced code blocks render as collapsible, FileMaker-Pro-style
 script accordions, using [fmscriptui](https://github.com/Blue-Kachina/fmscriptui).
 
+![Markdown preview showing a rendered FileMaker script accordion with syntax-highlighted calculations](docs/screenshots/preview.png)
+
 ## How it works
 
 - `render.js`, `filemaker-highlight.js`, `filemaker-grammar.js` and `filemaker-script.css` are
@@ -45,3 +47,7 @@ script accordions, using [fmscriptui](https://github.com/Blue-Kachina/fmscriptui
 
 Open `src/test/resources/sample.md` in the sandboxed IDE and check its Markdown preview —
 try toggling the IDE between a light and dark theme while it's open.
+
+## License
+
+fmscriptui-markdown is available under the MIT License. See [LICENSE](LICENSE).

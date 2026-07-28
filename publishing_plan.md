@@ -8,11 +8,14 @@ explicitly so you don't duplicate secrets or certs.
 
 ## Current state (as of this repo today)
 
-- No LICENSE file.
-- Git remote added (`github.com/Blue-Kachina/fmscriptui_jetbrains`), but not yet pushed.
-- No plugin icon (`pluginIcon.svg`) — in progress.
-- No CI/CD (no `.github/workflows`).
-- No signing config (`signPlugin`/`publishPlugin`) in `build.gradle.kts`.
+- LICENSE added (MIT).
+- Pushed to `github.com/Blue-Kachina/fmscriptui_jetbrains`.
+- Plugin icon added at `src/main/resources/META-INF/pluginIcon.svg`, plus a real screenshot at
+  `docs/screenshots/preview.png`, wired into `README.md`.
+- CI/CD added: `.github/workflows/ci.yml` + `release.yml`, mirroring FMCuttingBoard's proven
+  pattern (`publishPlugin` deliberately deferred until after first manual submission).
+- Signing configured in `build.gradle.kts`; cert generated and `CERTIFICATE_CHAIN`/
+  `PRIVATE_KEY`/`PRIVATE_KEY_PASSWORD` confirmed set as GitHub secrets.
 - No tests beyond a fixture (`src/test/resources/sample.md`) — no actual test class.
 - Bundles zero third-party code: `render.js`/`filemaker-highlight.js`/`filemaker-grammar.js`/
   `filemaker-script.css` are vendored verbatim from your own `fmscriptui` repo. `hljs.min.js`
@@ -25,17 +28,16 @@ explicitly so you don't duplicate secrets or certs.
 
 ## 1. Licensing
 
-- [ ] **Pick a license and add `LICENSE`** at repo root. Since `fmscriptui` is your
-  own repo, check what license *it* declares (or add one there too) and use the
-  same one here for consistency — MIT is the common choice for JetBrains plugins.
+- [x] **Pick a license and add `LICENSE`** at repo root — MIT added, copyright "Blue Kachina",
+  matching `fmscriptui`'s own declared license and FMCuttingBoard's precedent. `README.md` has
+  a `## License` section pointing at it.
 - [x] ~~Add a `THIRD-PARTY-NOTICES.md` documenting the bundled highlight.js build~~ —
   no longer needed. `hljs.min.js` has been removed entirely: `render.js` now falls back to
   `fmscriptui`'s own dependency-free `filemaker-highlight.js` tokenizer instead of a real
   highlight.js runtime, so this plugin bundles zero third-party code. Also shrinks the
   packaged ZIP by ~124 KB.
-- [ ] Confirm `fmscriptui`'s own license permits this kind of redistribution (moot
-  if you're the sole author/owner, but worth a one-line note in the README either
-  way since it's a stated dependency).
+- [x] Confirm `fmscriptui`'s own license permits this kind of redistribution —
+  `fmscriptui`'s `package.json` declares `"license": "MIT"`, same as here.
 
 ## 2. `plugin.xml` / metadata polish
 
@@ -51,23 +53,23 @@ explicitly so you don't duplicate secrets or certs.
 
 ## 3. Plugin icon (required for a polished listing, de facto required by reviewers)
 
-- [ ] Add `src/main/resources/META-INF/pluginIcon.svg` (16×16 or scalable, used in
-  Settings > Plugins list) and `pluginIcon_dark.svg` for dark theme. JetBrains'
-  [plugin icon guidelines](https://plugins.jetbrains.com/docs/marketplace/icons-for-plugins.html)
-  give exact sizing/format rules — 40×40 canvas, monochrome-friendly.
-- [ ] Consider 1–3 screenshots or a short GIF of the accordion rendering in the
-  Markdown preview (light + dark) for the Marketplace page gallery. This plugin is
-  purely visual, so a screenshot does a lot of work convincing someone to install
-  it — worth the 10 minutes.
+- [x] `src/main/resources/META-INF/pluginIcon.svg` — final version (0.1.2) uses your own
+  `resources/FmScriptUI_JetBrains_icon_small_bw.svg`: simple black line art (scroll + "FM" +
+  accordion-triangle), ~3.9 KB, transparent background, renders legibly at 40×40 and 16×16.
+  (An earlier hand-built version and your initial VTracer auto-trace of the 1024×1024 PNG were
+  both superseded by this one — the auto-trace was 140+ KB of photographic bezier detail that
+  didn't downscale cleanly.)
+- [x] Added `src/main/resources/META-INF/pluginIcon_dark.svg` — same artwork with white instead
+  of black lines. The original is pure black on transparent, which would be nearly invisible
+  against the dark Settings→Plugins list background in Darcula/dark themes without this.
+- [x] Added a real screenshot (`docs/screenshots/preview.png` — the actual Markdown preview
+  showing a rendered accordion with calculation syntax highlighting), wired into `README.md`.
+  One screenshot covers the plugin's whole surface area well; more aren't necessary.
 
 ## 4. Repository visibility
 
-- [ ] Push this repo to `github.com/Blue-Kachina/phpstorm_fmscriptui` (or whatever
-  name you settle on) — there's currently no git remote configured locally.
-  Marketplace listings link back to a public source repo, and `plugin.xml`
-  already references `github.com/Blue-Kachina/fmscriptui` for the fence spec.
-- [ ] Make sure the README's dev instructions (`./gradlew runIde`, etc.) still
-  read correctly once public — they currently do.
+- [x] Pushed to `github.com/Blue-Kachina/fmscriptui_jetbrains`.
+- [x] README's dev instructions (`./gradlew runIde`, etc.) read correctly.
 
 ## 5. JetBrains Marketplace account / vendor (shared with the other plugin)
 
@@ -90,32 +92,24 @@ required for some update-channel behaviors). Since both plugins share the
 `Blue-Kachina` vendor, **sign both with the same certificate** rather than
 generating a new one per plugin.
 
-- [ ] If you haven't already generated a cert for the other repo, do it once:
-  ```bash
-  openssl genrsa -aes256 -out private.pem 4096
-  openssl req -x509 -key private.pem -sha256 -days 3650 -out chain.crt
-  ```
-- [ ] Store `CERTIFICATE_CHAIN`, `PRIVATE_KEY`, `PRIVATE_KEY_PASSWORD` as secrets
-  (reuse the exact same values from the other repo's setup if they exist).
-- [ ] Add to `build.gradle.kts`:
-  ```kotlin
-  intellijPlatform {
-      signing {
-          certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
-          privateKey = providers.environmentVariable("PRIVATE_KEY")
-          password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
-      }
-      publishing {
-          token = providers.environmentVariable("PUBLISH_TOKEN")
-      }
-  }
-  ```
+- [x] Added the `signing`/`publishing` blocks to `build.gradle.kts`, reading
+  `CERTIFICATE_CHAIN`/`PRIVATE_KEY`/`PRIVATE_KEY_PASSWORD`/`PUBLISH_TOKEN` from environment
+  variables — same shape as FMCuttingBoard's. `./gradlew tasks` confirms `signPlugin` and
+  `publishPlugin` are now registered.
+- [x] Generated a fresh 10-year self-signed cert for this repo (couldn't reuse FMCuttingBoard's
+  exact key material — its private key was deleted from local disk after being pushed to GitHub
+  secrets, which are write-only): `CN=FmScriptUiMarkdown, OU=Blue Kachina, O=Blue Kachina,
+  C=US`. Generated via `openssl genrsa -aes256` / `openssl req -x509`, written only to a local
+  scratch dir, never committed.
+- [x] `CERTIFICATE_CHAIN`, `PRIVATE_KEY`, `PRIVATE_KEY_PASSWORD` confirmed set via
+  `gh secret list --repo Blue-Kachina/fmscriptui_jetbrains`. Local/scratch copies of the cert
+  material deleted afterward.
 
 ## 7. Compatibility verification
 
-- [ ] Run `./gradlew verifyPlugin` locally at least once before first submission —
-  `pluginVerification { ides { recommended() } }` is already configured, so this
-  should "just work," but it hasn't been exercised yet in this repo.
+- [x] Ran `./gradlew buildPlugin verifyPlugin` (via the project's own devcontainer) —
+  **Compatible** against PS-2025.3, PS-2026.1, and PS-2026.2, "can probably be enabled/disabled
+  without IDE restart." Re-ran clean after adding the icon/signing config — still green.
 - [ ] Since the plugin only depends on `com.intellij.modules.platform` +
   `org.intellij.plugins.markdown` (no PhpStorm-specific API), it should be
   installable in *any* IDE that bundles the Markdown plugin — IDEA, WebStorm,
@@ -130,21 +124,22 @@ generating a new one per plugin.
   present in the built jar, so a future refactor can't silently drop
   `render.js` from resources.
 
-## 8. CI/CD (mirror whatever pattern you used on the other repo)
+## 8. CI/CD (mirrors FMCuttingBoard's pattern)
 
-If the other repo's prep already includes a GitHub Actions release workflow
-(build → verify → sign → draft GitHub release → publish to Marketplace on
-tag/release), copy that pattern here for consistency rather than inventing a
-second one. If it doesn't exist yet either, the standard shape (from JetBrains'
-[intellij-platform-plugin-template](https://github.com/JetBrains/intellij-platform-plugin-template))
-is:
-
-- [ ] `.github/workflows/build.yml` — on push/PR: `./gradlew build test verifyPlugin`.
-- [ ] `.github/workflows/release.yml` — on published GitHub release: build, sign
-  (`./gradlew signPlugin`), publish (`./gradlew publishPlugin`), attach the signed
-  zip to the GitHub release.
-- [ ] Wire `CERTIFICATE_CHAIN` / `PRIVATE_KEY` / `PRIVATE_KEY_PASSWORD` /
-  `PUBLISH_TOKEN` from step 5–6 into the workflow's `env`.
+- [x] `.github/workflows/ci.yml` — on push/PR to any branch: `gradle build`, `gradle test`,
+  `gradle verifyPlugin`. Identical shape to FMCuttingBoard's (JDK 21, Gradle cache, uses the
+  runner's hosted `gradle` rather than `./gradlew`, matching the already-proven pattern there).
+- [x] `.github/workflows/release.yml` — on `v*` tag push: verifies the tag matches `version =`
+  in `build.gradle.kts` (this repo tracks version there, not in `gradle.properties` like
+  FMCuttingBoard), runs tests + `buildPlugin` + `verifyPlugin` + `signPlugin`
+  (`CERTIFICATE_CHAIN`/`PRIVATE_KEY`/`PRIVATE_KEY_PASSWORD` now available as repo secrets), then
+  creates a GitHub Release with the signed zip attached via `gh release create --generate-notes`.
+- [ ] **Not yet pushed/exercised** — needs an actual `v0.1.1`-style tag pushed to confirm the
+  pipeline runs end-to-end (FMCuttingBoard's only proved itself once a real tag triggered it).
+- [ ] `publishPlugin` intentionally left out for now (commented explanation in `release.yml`) —
+  the first submission of a new plugin ID goes through manual moderation regardless, so there's
+  no `PUBLISH_TOKEN` secret yet. Add both once `0.1.1` (or whatever version is submitted first)
+  is accepted.
 
 ## 9. First submission
 

@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Determine version from tag
+        run: echo "PLUGIN_VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+
+      - name: Verify tag matches build.gradle.kts
+        run: |
+          # build.gradle.kts may have CRLF line endings; strip \r (and any other whitespace)
+          # or the comparison silently fails even when both sides look identical in logs.
+          PROP_VERSION="$(grep -m1 '^version = ' build.gradle.kts | sed -E 's/version = "(.*)"/\1/' | tr -d '\r\n ')"
+          if [ "$PLUGIN_VERSION" != "$PROP_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME (version $PLUGIN_VERSION) does not match version = \"$PROP_VERSION\" in build.gradle.kts"
+            exit 1
+          fi
+
+      - name: Cache Gradle
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/notifications
+            ~/.gradle/native
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Run tests
+        run: gradle --no-daemon test
+
+      - name: Build plugin
+        run: gradle --no-daemon buildPlugin
+
+      - name: Verify plugin (JetBrains Plugin Verifier)
+        run: gradle --no-daemon verifyPlugin
+
+      - name: Sign plugin
+        env:
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+        run: gradle --no-daemon signPlugin
+
+      # publishPlugin intentionally not wired up yet: the first submission of a new plugin ID
+      # always goes through manual JetBrains moderation via the web UI regardless. Add a
+      # publishPlugin step (with a PUBLISH_TOKEN secret) once that first version is accepted,
+      # for automated publishing of subsequent releases.
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            build/distributions/*-signed.zip \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes

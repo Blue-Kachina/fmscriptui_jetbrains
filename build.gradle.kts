@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.bluekachina"
-version = "0.1.1"
+version = "0.1.2"
 
 repositories {
     mavenCentral()
@@ -32,12 +32,23 @@ intellijPlatform {
         }
 
         changeNotes = """
+            0.1.2: Added a proper plugin icon (light + dark variants).<br>
             0.1.1: Removed the highlight.js dependency — calculation syntax highlighting is now
             done via <a href="https://github.com/Blue-Kachina/fmscriptui">fmscriptui</a>'s own
             dependency-free tokenizer. No functional or visual change.<br>
             0.1.0: Initial release: render <code>```filemaker-script</code> fences in the Markdown
             preview using <a href="https://github.com/Blue-Kachina/fmscriptui">fmscriptui</a>.
         """.trimIndent()
+    }
+
+    signing {
+        certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
+        privateKey = providers.environmentVariable("PRIVATE_KEY")
+        password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
+    }
+
+    publishing {
+        token = providers.environmentVariable("PUBLISH_TOKEN")
     }
 
     pluginVerification {
