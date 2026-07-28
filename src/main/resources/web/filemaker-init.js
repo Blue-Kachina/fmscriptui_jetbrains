@@ -1,15 +1,14 @@
 /**
  * Glue between the IntelliJ Markdown JCEF preview and fmscriptui.
  *
- * render.js and hljs-language.js are ES modules (`export function`/`export default`),
- * but the Markdown preview injects `scripts` as plain classic `<script src="...">` tags
- * — so they can't be listed there directly. Instead this classic script dynamically
- * imports them. `import('./render.js')` resolves relative to this script's own served
- * URL, which is served from the same ResourceProvider/path prefix.
- *
- * hljs.min.js (a genuine UMD bundle, not an ES module) is listed as a real classic
- * <script> ahead of this one, so `window.hljs` already exists by the time this file
- * runs.
+ * render.js is an ES module (`export function`), but the Markdown preview injects `scripts`
+ * as plain classic `<script src="...">` tags — so it can't be listed there directly. Instead
+ * this classic script dynamically imports it. `import('./render.js')` resolves relative to
+ * this script's own served URL, which is served from the same ResourceProvider/path prefix.
+ * render.js in turn statically imports filemaker-highlight.js (fmscriptui's own
+ * dependency-free fallback highlighter, used since this plugin never sets `window.hljs`),
+ * which imports filemaker-grammar.js — both fetched automatically as part of the same module
+ * graph once render.js loads.
  */
 (function () {
     'use strict';
@@ -118,17 +117,6 @@
         render();
     }
 
-    function registerHljsLanguage(hljsLangMod) {
-        if (!window.hljs || !hljsLangMod) return;
-        try {
-            // registerLanguage() reads the definition's own `aliases: ['fmfn']` field
-            // (see hljs-language.js) and registers it automatically — no separate call needed.
-            window.hljs.registerLanguage('filemaker', hljsLangMod.default);
-        } catch (e) {
-            console.warn('[fmscriptui] failed to register filemaker hljs language', e);
-        }
-    }
-
     // This script is injected before <body> is necessarily parsed, so touching
     // document.body (theme detection/observers, the render MutationObserver fallback)
     // has to wait for DOMContentLoaded — doing it eagerly throws synchronously and
@@ -147,15 +135,8 @@
         // IntelliJ plugin uses for this exact timing quirk).
         setTimeout(applyTheme, 500);
 
-        Promise.all([
-            import('./render.js'),
-            import('./hljs-language.js').catch(function (err) {
-                console.warn('[fmscriptui] hljs-language.js failed to load, calculations will render unhighlighted', err);
-                return null;
-            }),
-        ]).then(function (results) {
-            registerHljsLanguage(results[1]);
-            boot(results[0]);
+        import('./render.js').then(function (renderMod) {
+            boot(renderMod);
         }).catch(function (err) {
             console.error('[fmscriptui] failed to load render.js', err);
         });

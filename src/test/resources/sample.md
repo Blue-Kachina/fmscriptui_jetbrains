@@ -21,7 +21,21 @@ the fence below renders as a collapsible script accordion instead of a plain cod
 
 5. # (comment) [ MAIN LOGIC ]
 
-6. Perform Script [ "Cleanup" ] *(disabled)*
+6. Set Variable [ $$total ; Value: Coverage of every highlighted token category ]
+   → Name: $$total
+   → Value:
+      // a line comment
+      /* a block comment */
+      Let ( [
+          $count = Round ( 3.14159 * 2e2 ; 1 ) ;
+          $label = "quoted \"string\"" ;
+          $tag = 'single \'quoted\'' ;
+          $ok = True and not False
+      ] ;
+          If ( $count >= 100 and $count <= 999 ; GetAsText ( $count ) ; "" )
+      )
+
+7. Perform Script [ "Cleanup" ] *(disabled)*
 
 Exit Script [ Result: 1 ]
    → Result: 1

@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.bluekachina"
-version = "0.1.0"
+version = "0.1.1"
 
 repositories {
     mavenCentral()
@@ -32,8 +32,11 @@ intellijPlatform {
         }
 
         changeNotes = """
-            Initial release: render <code>```filemaker-script</code> fences in the Markdown preview
-            using <a href="https://github.com/Blue-Kachina/fmscriptui">fmscriptui</a>.
+            0.1.1: Removed the highlight.js dependency — calculation syntax highlighting is now
+            done via <a href="https://github.com/Blue-Kachina/fmscriptui">fmscriptui</a>'s own
+            dependency-free tokenizer. No functional or visual change.<br>
+            0.1.0: Initial release: render <code>```filemaker-script</code> fences in the Markdown
+            preview using <a href="https://github.com/Blue-Kachina/fmscriptui">fmscriptui</a>.
         """.trimIndent()
     }
 
@@ -84,17 +87,20 @@ fun downloadBytes(url: String, minSizeBytes: Int = 0): ByteArray {
     }
 }
 
-// Re-syncs the bundled copy of fmscriptui's render.js / filemaker-script.css from GitHub.
+// Re-syncs the bundled copies of fmscriptui's rendering/highlighting modules from GitHub.
 // No hash-pinning ceremony here (unlike a third-party CDN dependency) — this is the same
-// author's own repo, fetched straight from the default branch.
+// author's own repo, fetched straight from the default branch. No third-party JS is bundled
+// at all: filemaker-highlight.js is fmscriptui's own dependency-free fallback tokenizer,
+// used here instead of a real highlight.js runtime.
 tasks.register("updateFmscriptui") {
     group = "fmscriptui"
-    description = "Downloads the latest render.js and filemaker-script.css from Blue-Kachina/fmscriptui"
+    description = "Downloads the latest render.js, filemaker-highlight.js, filemaker-grammar.js, and filemaker-script.css from Blue-Kachina/fmscriptui"
 
     val webDir = layout.projectDirectory.dir("src/main/resources/web")
     val files = mapOf(
         "render.js" to "src/render.js",
-        "hljs-language.js" to "src/hljs-language.js",
+        "filemaker-highlight.js" to "src/filemaker-highlight.js",
+        "filemaker-grammar.js" to "src/filemaker-grammar.js",
         "filemaker-script.css" to "filemaker-script.css",
     )
     val baseUrl = "https://raw.githubusercontent.com/Blue-Kachina/fmscriptui/main"
@@ -105,23 +111,5 @@ tasks.register("updateFmscriptui") {
             webDir.file(localName).asFile.writeBytes(bytes)
             println("Updated $localName (${bytes.size} bytes)")
         }
-    }
-}
-
-// Re-fetches the pinned highlight.js UMD build from cdnjs (a genuine third-party
-// dependency, unlike fmscriptui above) — bump hljsVersion and re-run to upgrade.
-val hljsVersion = "11.11.1"
-
-tasks.register("updateHighlightJs") {
-    group = "fmscriptui"
-    description = "Downloads highlight.js v$hljsVersion (UMD build) from cdnjs"
-
-    val targetFile = layout.projectDirectory.file("src/main/resources/web/hljs.min.js")
-    val url = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/$hljsVersion/highlight.min.js"
-
-    doLast {
-        val bytes = downloadBytes(url, minSizeBytes = 50_000)
-        targetFile.asFile.writeBytes(bytes)
-        println("Updated hljs.min.js to v$hljsVersion (${bytes.size / 1024} KB)")
     }
 }

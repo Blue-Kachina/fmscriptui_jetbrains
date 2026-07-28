@@ -1,4 +1,5 @@
 /** FileMaker Script fence renderer — transforms <pre><code class="language-filemaker-script"> into accordion panels */
+import { highlightFileMakerCalc } from './filemaker-highlight.js';
 
 const CLIPBOARD_SVG = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.688a4.5 4.5 0 00-1.329-.124H9.75M8.25 21h8.25"/></svg>';
 const CHECK_SVG = '<svg width="16" height="16" fill="none" stroke="#22c55e" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>';
@@ -161,7 +162,12 @@ export function renderFileMakerScripts(root = document) {
         wrapper.innerHTML = steps.map(renderStep).join('');
 
         wrapper.querySelectorAll('code.language-filemaker').forEach(calcEl => {
-            if (window.hljs) window.hljs.highlightElement(calcEl);
+            if (window.hljs) {
+                window.hljs.highlightElement(calcEl);
+            } else {
+                calcEl.innerHTML = highlightFileMakerCalc(calcEl.textContent);
+                calcEl.classList.add('hljs');
+            }
         });
 
         wrapper.querySelectorAll('.fm-calc-block pre').forEach(pre => {
