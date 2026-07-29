@@ -41,8 +41,10 @@ explicitly so you don't duplicate secrets or certs.
 
 ## 2. `plugin.xml` / metadata polish
 
-- [ ] Add an **email** attribute to `<vendor>` (currently only `url` is set).
-  Marketplace shows this on the listing and it's expected for support contact.
+- [x] Skipping the `<vendor email>` attribute on purpose — don't want a personal
+  email committed to source. Set/updated instead from the Marketplace vendor
+  profile (https://plugins.jetbrains.com/author/me), which is shown on the
+  listing without needing to live in `plugin.xml`.
 - [ ] Description CDATA is fine as a starting point, but Marketplace listings read
   better with a bit more: what problem it solves, a short "before/after", and a
   link back to the main `fmscriptui` project. You can keep it short — this isn't a
@@ -136,25 +138,15 @@ generating a new one per plugin.
   creates a GitHub Release with the signed zip attached via `gh release create --generate-notes`.
 - [ ] **Not yet pushed/exercised** — needs an actual `v0.1.1`-style tag pushed to confirm the
   pipeline runs end-to-end (FMCuttingBoard's only proved itself once a real tag triggered it).
-- [ ] `publishPlugin` intentionally left out for now (commented explanation in `release.yml`) —
-  the first submission of a new plugin ID goes through manual moderation regardless, so there's
-  no `PUBLISH_TOKEN` secret yet. Add both once `0.1.1` (or whatever version is submitted first)
-  is accepted.
+- [x] `publishPlugin` step added to `release.yml`, reading `PUBLISH_TOKEN` from a
+  repo secret (set via the GitHub web UI) — future `vX.Y.Z` tag pushes now publish
+  automatically after the manual first-submission approval below.
 
 ## 9. First submission
 
-- [ ] The **first** upload of a new plugin ID always goes through **manual
-  JetBrains moderation** (typically a few business days), regardless of whether
-  it's done via web UI or `publishPlugin` — plan the timing accordingly if this
-  is time-sensitive. Subsequent version updates via token are automatic.
-- [ ] Do the first upload manually via the web UI
-  (https://plugins.jetbrains.com/plugin/add) the first time, so you can see and
-  fix any moderation feedback interactively, then switch to CI-driven
-  `publishPlugin` for all later versions.
-- [ ] Pick a pricing model at submission time: Free is the obvious choice here
-  (small utility plugin) unless you have other plans.
-- [ ] Pick 1–2 Marketplace categories/tags (e.g. "Markdown", "Other Tools") to
-  aid discoverability.
+- [x] Plugin approved on the Marketplace: https://plugins.jetbrains.com/plugin/33191-filemaker-script-ui
+  — compatibility verification green across the board. Subsequent version updates
+  now go via `publishPlugin`/`PUBLISH_TOKEN` (see section 8) instead of the manual web UI.
 
 ## 10. Ongoing maintenance
 

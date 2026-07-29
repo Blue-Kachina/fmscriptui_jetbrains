@@ -1,5 +1,8 @@
 # fmscriptui-markdown
 
+[![Version](https://img.shields.io/jetbrains/plugin/v/33191.svg)](https://plugins.jetbrains.com/plugin/33191-filemaker-script-ui)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/33191.svg)](https://plugins.jetbrains.com/plugin/33191-filemaker-script-ui)
+
 An IntelliJ Platform plugin that extends the built-in Markdown preview (the bundled
 `org.intellij.plugins.markdown` plugin — present in PhpStorm, IntelliJ IDEA, WebStorm, etc.)
 so that ` ```filemaker-script ` fenced code blocks render as collapsible, FileMaker-Pro-style

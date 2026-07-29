@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.bluekachina"
-version = "0.1.2"
+version = "0.1.3"
 
 repositories {
     mavenCentral()
@@ -32,6 +32,8 @@ intellijPlatform {
         }
 
         changeNotes = """
+            0.1.3: No functional change — CI now publishes releases to the Marketplace
+            automatically.<br>
             0.1.2: Added a proper plugin icon (light + dark variants).<br>
             0.1.1: Removed the highlight.js dependency — calculation syntax highlighting is now
             done via <a href="https://github.com/Blue-Kachina/fmscriptui">fmscriptui</a>'s own
